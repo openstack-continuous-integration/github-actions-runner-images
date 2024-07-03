@@ -1,7 +1,7 @@
 .vscode
 .constructor
 .provisioner
-temps/
+temp/
 *.old
 build.env
 manifest.json
