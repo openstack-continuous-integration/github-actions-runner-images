@@ -20,7 +20,8 @@ tasks:
     cmds:
     - task --list
 
-  git_clone_if_not_exist:
+  _git_clone_if_not_exist:
+    internal: true
     vars:
       REPO_URL: '{{.REPO_URL}}'
       REPO_BRANCH: '{{.REPO_BRANCH}}'
@@ -35,9 +36,10 @@ tasks:
                 '{{.REPO_URL}}'
                 '{{.REPO_DIR}}'
 
-  git_checkout_or_pull:
+  _git_checkout_or_pull:
+    internal: true
     deps:
-    - task: git_clone_if_not_exist
+    - task: _git_clone_if_not_exist
       vars:
         REPO_URL: '{{.REPO_URL}}'
         REPO_BRANCH: '{{.REPO_BRANCH}}'
@@ -53,16 +55,34 @@ tasks:
         git checkout tags/{{.REPO_TAG}}
       {{end}}
 
-  init:
-    desc: Initializes constructor and provisioner repositories
+  checkout-or-pull:
+    desc: Git checkout or pull the constructor and provisioner repositories
+    aliases:
+    - cop
     deps:
-    - task: git_checkout_or_pull
+    - cop-constructor
+    - cop-privisioner
+
+  checkout-or-pull-constructor:
+    desc: Git checkout or pull the constructor repository
+    aliases:
+    - cop-constructor
+    - cop-c
+    deps:
+    - task: _git_checkout_or_pull
       vars:
         REPO_URL: '{{.CONSTRUCTOR_REPO_URL}}'
         REPO_BRANCH: '{{.CONSTRUCTOR_REPO_BRANCH}}'
         REPO_TAG: '{{.CONSTRUCTOR_REPO_TAG}}'
         REPO_DIR: '{{.CONSTRUCTOR_REPO_DIR}}'
-    - task: git_checkout_or_pull
+
+  checkout-or-pull-provisioner:
+    desc: Git checkout or pull the provisioner repository
+    aliases:
+    - cop-provisioner
+    - cop-p
+    deps:
+    - task: _git_checkout_or_pull
       vars:
         REPO_URL: '{{.PROVISIONER_REPO_URL}}'
         REPO_BRANCH: '{{.PROVISIONER_REPO_BRANCH}}'
